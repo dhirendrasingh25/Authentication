@@ -9,7 +9,7 @@ const Hero = () => {
           <h1 className='text-center mb-4'>CERT</h1>
           <p className='text-center mb-4'>
           This is MERN Authentication app that stores a JWT in a HTTP-Only cookie
-                .It also uses Redux Toolkit for State Management and MongoDB for DataBase
+                <p>It also uses Redux Toolkit for State Management and MongoDB for DataBase</p>
                <p class=' pt-5 font-bold'>Created By Dhirendra Singh 2023</p>
           </p>
           <div className='d-flex'>
