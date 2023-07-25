@@ -4,6 +4,7 @@ import Home from './screens/Home'
 import Login from './screens/Login';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Register from './screens/Register';
+import ProfileScreen from './screens/ProfileScreen';
 
 const App = () => {
   return (
@@ -13,6 +14,7 @@ const App = () => {
         <Route index={true} path="/" element={<Home />} />
         <Route  path="/login" element={<Login />} />
         <Route  path="/register" element={<Register />} />
+        <Route  path="/profile" element={<ProfileScreen />} />
       </Routes>
   </BrowserRouter>
   )
