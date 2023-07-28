@@ -1,31 +1,73 @@
-import React from 'react'
-import TableRowsIcon from '@mui/icons-material/TableRows';
-import { Link } from "react-router-dom";
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+// import { Navbar, Nav, Container, NavDropdown, Badge } from 'react-bootstrap';
+import { Navbar, Nav, Container, NavDropdown } from 'react-bootstrap';
+import { FaSignInAlt, FaSignOutAlt } from 'react-icons/fa';
+import { LinkContainer } from 'react-router-bootstrap';
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { useLogoutMutation } from '../slices/userApiSlice';
+import { logout } from '../slices/authSlice';
+
 
 const Header = () => {
-  return (
-    <nav class='flex h-20 sticky z-40 top-0 bg-gradient-to-r from-green-300 via-blue-500 to-purple-600 z'>
-    <div class="navbar bg-base-300 rounded-box">
-<div class="flex-1 px-2 lg:flex-none">
-<Link to='/'>
-<a class=" font-semibold sm:text-3xl md:text-4xl font-sans text-xl hover:text-white">MERN Authentication</a>
-</Link>  
-</div> 
-<div class="flex justify-end flex-1 px-2">
-<div class="flex items-stretch">
-  <div class="dropdown dropdown-end z-40">
-    <label tabindex="0" class="btn btn-ghost  "><TableRowsIcon class='min-h-full min-w-full' /></label>
-    <ul tabindex="0" class="menu dropdown-content z-40 p-2 shadow  bg-white rounded-box w-52 mt-4">
-    <li><Link to='/login'><a  class='text-xl font-sans font-medium tex'>Log In</a></Link></li>
-    <li><Link to='/register'><a  class='text-xl font-sans font-medium'>Sign Up</a></Link></li>
-    </ul>
-  </div>
-</div>
-</div>
-</div>
-</nav>
-  )
-}
+  const { userInfo } = useSelector((state) => state.auth);
 
-export default Header
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const [logoutApiCall] = useLogoutMutation();
+
+  const logoutHandler = async () => {
+    try {
+      console.log(userInfo);
+      await logoutApiCall().unwrap();
+      dispatch(logout());
+      navigate('/login');
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  return (
+    <header>
+      <Navbar bg='dark' variant='dark' expand='lg' collapseOnSelect>
+        <Container>
+          <LinkContainer to='/'>
+            <Navbar.Brand>MERN Auth</Navbar.Brand>
+          </LinkContainer>
+          <Navbar.Toggle aria-controls='basic-navbar-nav' />
+          <Navbar.Collapse id='basic-navbar-nav'>
+            <Nav className='ms-auto'>
+              {userInfo ? (
+                <>
+                  <NavDropdown title={userInfo.name} id='username'>
+                    <LinkContainer to='/profile'>
+                      <NavDropdown.Item>Profile</NavDropdown.Item>
+                    </LinkContainer>
+                    <NavDropdown.Item onClick={logoutHandler}>
+                      Logout
+                    </NavDropdown.Item>
+                  </NavDropdown>
+                </>
+              ) : (
+                <>
+                  <LinkContainer to='/login'>
+                    <Nav.Link>
+                      <FaSignInAlt /> Sign In
+                    </Nav.Link>
+                  </LinkContainer>
+                  <LinkContainer to='/register'>
+                    <Nav.Link>
+                      <FaSignOutAlt /> Sign Up
+                    </Nav.Link>
+                  </LinkContainer>
+                </>
+              )}
+            </Nav>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
+    </header>
+  );
+};
+
+export default Header;

@@ -1,22 +1,45 @@
-import React from 'react'
 import { useState, useEffect } from 'react';
 import { Form, Button, Row, Col } from 'react-bootstrap';
 import FormContainer from '../components/FormContainer';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import Loader from '../components/Loader';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { useRegisterMutation } from '../slices/userApiSlice';
+import { setCrediantials } from '../slices/authSlice';
 import { toast } from 'react-toastify';
 
 const Register = () => {
-  
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const [register, { isLoading }] = useRegisterMutation();
+
+  const { userInfo } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (userInfo) {
+      navigate('/');
+    }
+  }, [navigate, userInfo]);
 
   const submitHandler = async (e) => {
     e.preventDefault();
+
     if (password !== confirmPassword) {
       toast.error('Passwords do not match');
+    } else {
+      try {
+        const res = await register({ name, email, password }).unwrap();
+        dispatch(setCrediantials({ ...res }));
+        navigate('/');
+      } catch (err) {
+        toast.error(err?.data?.message || err.error);
+      }
     }
   };
   return (
@@ -66,6 +89,7 @@ const Register = () => {
           Register
         </Button>
 
+        {isLoading && <Loader />}
       </Form>
 
       <Row className='py-3'>
@@ -74,7 +98,7 @@ const Register = () => {
         </Col>
       </Row>
     </FormContainer>
-  )
-}
+  );
+};
 
-export default Register
+export default Register;
